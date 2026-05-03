@@ -15,19 +15,23 @@ const orderSchema = new mongoose.Schema({
   status: { type: String, enum: ['open', 'partial', 'completed', 'cancelled'], default: 'open' },
 
   // Gold fields
-  goldQuantity: { type: Number },
-  goldPrice: { type: Number }, // price per 1k gold in USD
+  goldQuantity: { type: Number },   // total gold (e.g. 1,000,000)
+  goldPrice: { type: Number },      // price per 100k gold in EGP
+  goldUnit: { type: String },       // 'ألف' or 'مليون'
 
   // Gems fields
   gemLevel: { type: Number },
-  gemValueInGold: { type: Number },
-  gemGoldPrice: { type: Number },
+  gemGoldPrice: { type: Number },   // price per gem in EGP
   gemQuantity: { type: Number },
+  gemImageUrl: { type: String },
 
   // Materials fields
   materialName: { type: String },
-  materialValueInGold: { type: Number },
-  materialQuantity: { type: Number },
+  materialGoldAmount: { type: Number }, // gold amount used to buy material
+  materialImageUrl: { type: String },
+
+  // Claim limit per user
+  maxClaimPerUser: { type: Number },
 
   // Tracking
   totalQuantity: { type: Number, required: true },

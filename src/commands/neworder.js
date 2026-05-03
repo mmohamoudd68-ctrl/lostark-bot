@@ -1,8 +1,6 @@
 const {
   SlashCommandBuilder,
   ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
@@ -14,20 +12,20 @@ const { hasStaffPermission } = require('../utils/helpers');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('neworder')
-    .setDescription('Create a new Lost Ark order')
+    .setDescription('إنشاء أوردر جديد')
     .addStringOption(opt =>
       opt.setName('type')
-        .setDescription('Order type')
+        .setDescription('نوع الأوردر')
         .setRequired(true)
         .addChoices(
-          { name: '💰 Gold', value: 'Gold' },
-          { name: '💎 Gems', value: 'Gems' },
-          { name: '🧱 Materials', value: 'Materials' }
+          { name: '💰 جولد', value: 'Gold' },
+          { name: '💎 جيمز', value: 'Gems' },
+          { name: '🧱 ماتريال', value: 'Materials' }
         )
     )
     .addStringOption(opt =>
       opt.setName('server')
-        .setDescription('Lost Ark server')
+        .setDescription('سيرفر Lost Ark')
         .setRequired(true)
         .addChoices(
           { name: 'Gienah', value: 'Gienah' },
@@ -39,39 +37,53 @@ module.exports = {
     )
     .addStringOption(opt =>
       opt.setName('order_code')
-        .setDescription('Unique order code (e.g. GA-1025)')
+        .setDescription('كود الأوردر (مثال: GA-1025)')
         .setRequired(true)
     ),
 
   async execute(interaction) {
     if (!hasStaffPermission(interaction.member)) {
-      return interaction.reply({ content: '❌ You do not have permission to create orders.', ephemeral: true });
+      return interaction.reply({ content: '❌ ما عندكش صلاحية إنشاء أوردر.', ephemeral: true });
     }
 
     const type = interaction.options.getString('type');
     const server = interaction.options.getString('server');
     const orderCode = interaction.options.getString('order_code').toUpperCase();
 
-    // Build modal based on type
     const modal = new ModalBuilder()
       .setCustomId(`order_modal_${type}_${server}_${orderCode}`)
-      .setTitle(`New ${type} Order — ${orderCode}`);
+      .setTitle(`أوردر ${type} جديد — ${orderCode}`);
 
     if (type === 'Gold') {
       modal.addComponents(
         new ActionRowBuilder().addComponents(
           new TextInputBuilder()
-            .setCustomId('gold_quantity')
-            .setLabel('Gold Quantity (e.g. 100000)')
+            .setCustomId('gold_amount')
+            .setLabel('الكمية (رقم فقط، مثال: 100)')
             .setStyle(TextInputStyle.Short)
             .setRequired(true)
         ),
         new ActionRowBuilder().addComponents(
           new TextInputBuilder()
-            .setCustomId('gold_price')
-            .setLabel('Gold Price per 1k in USD (e.g. 0.25)')
+            .setCustomId('gold_unit')
+            .setLabel('الوحدة: اكتب "ألف" أو "مليون"')
             .setStyle(TextInputStyle.Short)
             .setRequired(true)
+            .setPlaceholder('ألف أو مليون')
+        ),
+        new ActionRowBuilder().addComponents(
+          new TextInputBuilder()
+            .setCustomId('gold_price')
+            .setLabel('سعر 100 ألف جولد بالجنيه (مثال: 250)')
+            .setStyle(TextInputStyle.Short)
+            .setRequired(true)
+        ),
+        new ActionRowBuilder().addComponents(
+          new TextInputBuilder()
+            .setCustomId('max_claim')
+            .setLabel('الحد الأقصى للمستخدم (اختياري، مثال: 500000)')
+            .setStyle(TextInputStyle.Short)
+            .setRequired(false)
         )
       );
     } else if (type === 'Gems') {
@@ -79,30 +91,31 @@ module.exports = {
         new ActionRowBuilder().addComponents(
           new TextInputBuilder()
             .setCustomId('gem_level')
-            .setLabel('Gem Level (e.g. 10)')
+            .setLabel('مستوى الجيم (مثال: 10)')
             .setStyle(TextInputStyle.Short)
             .setRequired(true)
         ),
         new ActionRowBuilder().addComponents(
           new TextInputBuilder()
-            .setCustomId('gem_value')
-            .setLabel('Gem Value in Gold (e.g. 500000)')
-            .setStyle(TextInputStyle.Short)
-            .setRequired(true)
-        ),
-        new ActionRowBuilder().addComponents(
-          new TextInputBuilder()
-            .setCustomId('gem_gold_price')
-            .setLabel('Current Gold Price per 1k USD (e.g. 0.25)')
+            .setCustomId('gem_price')
+            .setLabel('سعر الجيم الواحد بالجنيه (مثال: 1200)')
             .setStyle(TextInputStyle.Short)
             .setRequired(true)
         ),
         new ActionRowBuilder().addComponents(
           new TextInputBuilder()
             .setCustomId('gem_quantity')
-            .setLabel('Gem Quantity (e.g. 3)')
+            .setLabel('عدد الجيمات (مثال: 3)')
             .setStyle(TextInputStyle.Short)
             .setRequired(true)
+        ),
+        new ActionRowBuilder().addComponents(
+          new TextInputBuilder()
+            .setCustomId('gem_image')
+            .setLabel('لينك صورة الجيم')
+            .setStyle(TextInputStyle.Short)
+            .setRequired(true)
+            .setPlaceholder('https://...')
         )
       );
     } else if (type === 'Materials') {
@@ -110,23 +123,31 @@ module.exports = {
         new ActionRowBuilder().addComponents(
           new TextInputBuilder()
             .setCustomId('material_name')
-            .setLabel('Material Name (e.g. Abidos)')
+            .setLabel('اسم الماتريال (مثال: أبيدوس)')
             .setStyle(TextInputStyle.Short)
             .setRequired(true)
         ),
         new ActionRowBuilder().addComponents(
           new TextInputBuilder()
-            .setCustomId('material_value')
-            .setLabel('Material Value in Gold (e.g. 2000000)')
+            .setCustomId('material_gold')
+            .setLabel('كمية الجولد المستخدمة (مثال: 2000000)')
             .setStyle(TextInputStyle.Short)
             .setRequired(true)
         ),
         new ActionRowBuilder().addComponents(
           new TextInputBuilder()
-            .setCustomId('material_quantity')
-            .setLabel('Quantity (e.g. 10)')
+            .setCustomId('material_image')
+            .setLabel('لينك صورة الماتريال')
             .setStyle(TextInputStyle.Short)
             .setRequired(true)
+            .setPlaceholder('https://...')
+        ),
+        new ActionRowBuilder().addComponents(
+          new TextInputBuilder()
+            .setCustomId('max_claim')
+            .setLabel('الحد الأقصى للمستخدم بالجولد (اختياري)')
+            .setStyle(TextInputStyle.Short)
+            .setRequired(false)
         )
       );
     }

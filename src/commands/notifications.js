@@ -5,7 +5,7 @@ const config = require('../../config/config');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('notifications')
-    .setDescription('Manage your DM notification preferences for orders'),
+    .setDescription('إدارة إشعارات الأوردرات عبر DM'),
 
   async execute(interaction) {
     let prefs = await UserPrefs.findOne({ userId: interaction.user.id });
@@ -16,18 +16,18 @@ module.exports = {
 
     const typeMenu = new StringSelectMenuBuilder()
       .setCustomId('notif_types')
-      .setPlaceholder('Select order types to subscribe to')
+      .setPlaceholder('اختار أنواع الأوردرات اللي تتابعها')
       .setMinValues(0)
       .setMaxValues(3)
       .addOptions([
-        { label: '💰 Gold Orders', value: 'Gold', default: prefs.subscribedTypes.includes('Gold') },
-        { label: '💎 Gems Orders', value: 'Gems', default: prefs.subscribedTypes.includes('Gems') },
-        { label: '🧱 Materials Orders', value: 'Materials', default: prefs.subscribedTypes.includes('Materials') },
+        { label: '💰 أوردرات الجولد', value: 'Gold', default: prefs.subscribedTypes.includes('Gold') },
+        { label: '💎 أوردرات الجيمز', value: 'Gems', default: prefs.subscribedTypes.includes('Gems') },
+        { label: '🧱 أوردرات الماتريال', value: 'Materials', default: prefs.subscribedTypes.includes('Materials') },
       ]);
 
     const serverMenu = new StringSelectMenuBuilder()
       .setCustomId('notif_servers')
-      .setPlaceholder('Select servers to subscribe to')
+      .setPlaceholder('اختار السيرفرات اللي تتابعها')
       .setMinValues(0)
       .setMaxValues(5)
       .addOptions(config.servers.map(s => ({
@@ -38,11 +38,11 @@ module.exports = {
 
     const toggleBtn = new ButtonBuilder()
       .setCustomId('notif_toggle_dm')
-      .setLabel(prefs.dmEnabled ? '🔔 DMs ON — Click to Disable' : '🔕 DMs OFF — Click to Enable')
+      .setLabel(prefs.dmEnabled ? '🔔 الإشعارات شغالة — اضغط للإيقاف' : '🔕 الإشعارات متوقفة — اضغط للتفعيل')
       .setStyle(prefs.dmEnabled ? ButtonStyle.Success : ButtonStyle.Secondary);
 
     await interaction.reply({
-      content: `**📬 Notification Settings**\nCurrent DM status: **${prefs.dmEnabled ? 'Enabled ✅' : 'Disabled ❌'}**\n\nSelect your preferences below:`,
+      content: `**📬 إعدادات الإشعارات**\nحالة الـ DM: **${prefs.dmEnabled ? 'مفعل ✅' : 'متوقف ❌'}**\n\nاختار تفضيلاتك:`,
       components: [
         new ActionRowBuilder().addComponents(typeMenu),
         new ActionRowBuilder().addComponents(serverMenu),
