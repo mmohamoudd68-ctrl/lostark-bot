@@ -92,14 +92,19 @@ async function generateOrderImage(order) {
   ctx.fillStyle = stripGrad;
   ctx.fillRect(2, 6, 4, H-20);
 
-  // ── Thumbnail (top right)
+  // ── Thumbnail (top right) with timeout
   let thumb = null;
   try {
     const imgUrl = order.type === 'Gold' ? GOLD_IMAGE_URL
       : order.type === 'Gems' ? order.gemImageUrl
       : order.materialImageUrl;
-    if (imgUrl) thumb = await loadImage(imgUrl);
-  } catch(e) {}
+    if (imgUrl) {
+      thumb = await Promise.race([
+        loadImage(imgUrl),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 4000)),
+      ]);
+    }
+  } catch(e) { thumb = null; }
 
   if (thumb) {
     const tx = W-110, ty = 18, ts = 90;
