@@ -122,14 +122,14 @@ async function generateOrderImage(order) {
   }
 
   // ── Title
-  ctx.font = 'bold 26px Roboto';
+  ctx.font = 'bold 26px DejaVu Sans';
   ctx.fillStyle = accent;
   ctx.shadowColor = glow; ctx.shadowBlur = 10;
   ctx.fillText(typeConf.label, 28, 50);
   ctx.shadowBlur = 0;
 
   // ── Server
-  ctx.font = '13px Roboto';
+  ctx.font = '13px DejaVu Sans';
   ctx.fillStyle = '#888888';
   ctx.fillText(`SERVER: ${order.server.toUpperCase()}`, 28, 72);
 
@@ -138,7 +138,7 @@ async function generateOrderImage(order) {
   roundRect(ctx, 28, 84, 160, 28, 6); ctx.fill();
   ctx.strokeStyle = accent+'66'; ctx.lineWidth = 1;
   roundRect(ctx, 28, 84, 160, 28, 6); ctx.stroke();
-  ctx.font = 'bold 14px RobotoMono';
+  ctx.font = 'bold 14px Liberation Mono';
   ctx.fillStyle = accent;
   ctx.fillText(order.orderCode, 40, 103);
 
@@ -149,7 +149,7 @@ async function generateOrderImage(order) {
   roundRect(ctx, 200, 84, 120, 28, 14); ctx.stroke();
   ctx.fillStyle = statusConf.color;
   ctx.beginPath(); ctx.arc(216, 98, 5, 0, Math.PI*2); ctx.fill();
-  ctx.font = 'bold 12px Roboto';
+  ctx.font = 'bold 12px DejaVu Sans';
   ctx.fillStyle = statusConf.color;
   ctx.fillText(statusConf.label, 226, 103);
 
@@ -185,16 +185,16 @@ async function generateOrderImage(order) {
     ctx.fillStyle = '#FFFFFF08';
     roundRect(ctx, 28, rowY-18, 390, 30, 6); ctx.fill();
 
-    ctx.font = '14px Roboto';
+    ctx.font = '14px DejaVu Sans';
     ctx.fillStyle = '#CCCCCC';
     ctx.fillText(label, 44, rowY);
 
-    ctx.font = 'bold 13px RobotoMono';
+    ctx.font = 'bold 13px Liberation Mono';
     ctx.fillStyle = '#FFFFFF';
     const valW = ctx.measureText(value).width + 20;
     ctx.fillStyle = accent+'22';
     roundRect(ctx, 430-valW, rowY-16, valW, 24, 5); ctx.fill();
-    ctx.font = 'bold 13px RobotoMono';
+    ctx.font = 'bold 13px Liberation Mono';
     ctx.fillStyle = '#FFFFFF';
     ctx.fillText(value, 440-valW, rowY);
 
@@ -208,14 +208,14 @@ async function generateOrderImage(order) {
   ctx.strokeStyle = accent+'44'; ctx.lineWidth = 1;
   roundRect(ctx, sx, sy, sw, sh, 10); ctx.stroke();
 
-  ctx.font = 'bold 11px Roboto';
+  ctx.font = 'bold 11px DejaVu Sans';
   ctx.fillStyle = '#666666';
   ctx.fillText('STOCK STATUS', sx+14, sy+22);
 
   const goalText = order.type === 'Gems'
     ? `GOAL: ${order.totalQuantity} GEMS`
     : `GOAL: ${formatGold(order.totalQuantity).toUpperCase()}`;
-  ctx.font = '10px Roboto';
+  ctx.font = '10px DejaVu Sans';
   ctx.fillStyle = accent+'AA';
   ctx.fillText(goalText, sx+14, sy+38);
 
@@ -227,13 +227,13 @@ async function generateOrderImage(order) {
 
   ctx.save();
   ctx.shadowColor = glow; ctx.shadowBlur = 20;
-  ctx.font = 'bold 44px Roboto';
+  ctx.font = 'bold 44px DejaVu Sans';
   ctx.fillStyle = pct === 0 ? '#FF4444' : accent;
   ctx.textAlign = 'center';
   ctx.fillText(bigNum, sx+sw/2, sy+108);
   ctx.restore();
 
-  ctx.font = '11px Roboto';
+  ctx.font = '11px DejaVu Sans';
   ctx.fillStyle = '#555555';
   ctx.textAlign = 'center';
   ctx.fillText(order.type === 'Gems' ? 'GEMS AVAILABLE' : 'UNITS AVAILABLE', sx+sw/2, sy+126);
@@ -254,7 +254,7 @@ async function generateOrderImage(order) {
   ctx.beginPath(); ctx.arc(sx+30, sy+166, 5, 0, Math.PI*2); ctx.fill();
   ctx.shadowBlur = 0;
 
-  ctx.font = 'bold 12px Roboto';
+  ctx.font = 'bold 12px DejaVu Sans';
   ctx.fillStyle = stockColor;
   ctx.textAlign = 'left';
   ctx.fillText(`${stockLabel} (${pct}%)`, sx+42, sy+171);
@@ -262,7 +262,7 @@ async function generateOrderImage(order) {
   // ── Footer
   ctx.fillStyle = accent+'44';
   ctx.fillRect(28, H-36, W-56, 1);
-  ctx.font = '11px Roboto';
+  ctx.font = '11px DejaVu Sans';
   ctx.fillStyle = '#444444';
   ctx.textAlign = 'left';
   ctx.fillText(`#${order.orderCode}  •  LOST HUB  •  SECURED TRANSACTION`, 28, H-16);
