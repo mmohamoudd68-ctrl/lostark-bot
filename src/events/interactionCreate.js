@@ -15,7 +15,7 @@ const Order = require('../models/Order');
 const Ticket = require('../models/Ticket');
 const UserPrefs = require('../models/UserPrefs');
 const {
-  buildOrderEmbed, buildTicketEmbed, buildDMEmbed,
+  buildOrderMessage, buildTicketEmbed, buildDMEmbed,
   buildLogEmbed, hasAdminPermission, formatGold, formatGoldAr,
 } = require('../utils/helpers');
 
@@ -102,7 +102,7 @@ async function handleOrderModal(interaction, client) {
   const order = new Order(orderData);
   await order.save();
 
-  const embed = buildOrderEmbed(order);
+  const { attachment } = await buildOrderMessage(order);
   const claimBtn = new ButtonBuilder()
     .setCustomId(`claim_order_${order._id}`)
     .setLabel('✋  Claim Order')
@@ -115,7 +115,7 @@ async function handleOrderModal(interaction, client) {
   const ordersChannel = await client.channels.fetch(config.channels.orders);
   const msg = await ordersChannel.send({
     content: mentions,
-    embeds: [embed],
+    files: [attachment],
     components: [new ActionRowBuilder().addComponents(claimBtn)],
   });
 
@@ -308,9 +308,9 @@ async function handleClaimQtyModal(interaction, client) {
   try {
     const ordersChannel = await client.channels.fetch(config.channels.orders);
     const msg = await ordersChannel.messages.fetch(freshOrder.messageId);
-    const updatedEmbed = buildOrderEmbed(freshOrder);
+    const { attachment: updatedAttachment } = await buildOrderMessage(freshOrder);
     const components = freshOrder.status === 'completed' ? [] : msg.components;
-    await msg.edit({ embeds: [updatedEmbed], components });
+    await msg.edit({ files: [updatedAttachment], components, attachments: [] });
   } catch (e) {}
 
   const qtyDisplay = order.type === 'Gems' ? `${qty} جيم` : formatGoldAr(qty);
@@ -391,7 +391,8 @@ async function handleCancelTicketBtn(interaction, client) {
       const ordersChannel = await client.channels.fetch(config.channels.orders);
       const msg = await ordersChannel.messages.fetch(order.messageId);
       const claimBtn = new ButtonBuilder().setCustomId(`claim_order_${order._id}`).setLabel('✋  Claim Order').setStyle(ButtonStyle.Primary);
-      await msg.edit({ embeds: [buildOrderEmbed(order)], components: [new ActionRowBuilder().addComponents(claimBtn)] });
+      const { attachment: cancelAttachment } = await buildOrderMessage(order);
+      await msg.edit({ files: [cancelAttachment], attachments: [], components: [new ActionRowBuilder().addComponents(claimBtn)] });
     } catch (e) {}
   }
 
